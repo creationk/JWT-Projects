@@ -32,18 +32,22 @@ public class TestJWT {
         System.out.println("*********** KEYS ***********");
         System.out.println("jsonPublicKey:\t"+jsonPublicKey+"\njsonPrivateKey:\t"+jsonPrivateKey);
 
+        //Prepare algorithm header
+        JsonWebSignature jws = new JsonWebSignature();
+        jws.setAlgorithmHeaderValue(algorithm);
+
+        //Set key-id
+        jws.setKeyIdHeaderValue(kid);
+
         //Prepare payload
         JwtClaims claims = new JwtClaims();
         claims.setGeneratedJwtId();
         claims.setIssuedAtToNow();
         claims.setNotBeforeMinutesInThePast(DELAY);
         claims.setClaim("dummy_name","dummy value");
-        JsonWebSignature jws = new JsonWebSignature();
-        jws.setAlgorithmHeaderValue(algorithm);
-        jws.setKeyIdHeaderValue(kid);
         jws.setPayload(claims.toJson());
 
-        //Encode using the private key and serialize
+        //Encode the signature using the private key and serialize
         jws.setKey(privateKey);
         String token = jws.getCompactSerialization();
 
